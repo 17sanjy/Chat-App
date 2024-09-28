@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Socket.io Chat-App</title>
+  <style>
+    body { margin: 0; padding-bottom: 3rem; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+ background: #adb7a6; }
+
+    #form { background: rgba(0, 0, 0, 0.15); padding: 0.25rem; position: fixed; bottom: 0; left: 0; right: 0; display: flex; height: 3rem; box-sizing: border-box; backdrop-filter: blur(10px); }
+    #input { border: none; padding: 0 1rem; flex-grow: 1; border-radius: 2rem; margin: 0.25rem; }
+    #input:focus { outline: none; }
+    #form > button { background: #493be6; border: none; padding: 0 1rem; margin: 0.25rem; border-radius: 3px; outline: none; color: #fff; }
+
+    #messages { list-style-type: none; margin: 0; padding: 0; }
+    #messages > li { padding: 0.5rem 1rem; }
+    #messages > li:nth-child(odd) { background: none; } 
+    /* background: #efefef; */
+    #title-container { margin: 0%; padding: 0%; background-color: rgb(233, 208, 154); }
+    #title { text-align: center; color: #bd930a; padding: 10px; }
+  </style>
+</head>
+
+<body>
+  <div id="title-container">
+    <h1 id="title">Chat App</h1>
+  </div>
+  <form action="" id="form">
+    <input type="text" id="input" name="input" />
+    <button>Send</button>
+    <button id="toggle-btn">Disconnect</button>
+  </form>
+  <ul id="messages"></ul>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    let counter = 0;
+    const socket = io({
+      // enable retries
+      ackTimeout: 10000,
+      retries: 3,
+      auth: {
+        serverOffset: 0
+      },
+    });
+
+    const form = document.getElementById('form');
+    const input = document.getElementById('input');
+    const messages = document.getElementById('messages');
+    const toggleButton = document.getElementById('toggle-btn');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (input.value) {
+        // compute a unique offset
+        const clientOffset = `${socket.id}-${counter++}`;
+        socket.emit('chat-message', input.value, clientOffset);
+        input.value = '';
+      }
+    });
+
+    toggleButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (socket.connected) {
+        toggleButton.innerText = 'Connect';
+        socket.disconnect();
+      } else {
+        toggleButton.innerText = 'Disconnect';
+        socket.connect();
+      }
+    });
+
+    socket.on('chat-message', (msg, serverOffset) => {
+      const item = document.createElement('li');
+      item.textContent = msg;
+      messages.appendChild(item);
+      window.scrollTo(0, document.body.scrollHeight);
+      socket.auth.serverOffset = serverOffset;
+    });
+  </script>
+</body>
+
+</html>

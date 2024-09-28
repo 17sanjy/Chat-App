@@ -1,0 +1,26 @@
+{
+  "name": "socket-chat-app",
+  "version": "1.0.0",
+  "description": "Real-time chat application using socket.io.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "socket.io",
+    "socket",
+    "io",
+    "websocket",
+    "chat",
+    "chat-app"
+  ],
+  "author": "Sanjay, Socket.io Documentation",
+  "license": "ISC",
+  "dependencies": {
+    "@socket.io/cluster-adapter": "^0.2.2",
+    "express": "^4.21.0",
+    "socket.io": "^4.8.0",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7"
+  }
+}
